@@ -1,0 +1,25 @@
+# Created by https://www.gitignore.io/api/go,intellij
+
+### MacOS ###
+*.DS_Store
+
+### Go ###
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+vendor
+.idea
+*pem
+coverage.txt
+bin/*
+converted_swagger.yaml
+docs/*
