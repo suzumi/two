@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"os"
-	"fmt"
 	"encoding/json"
 	"io"
 )
@@ -10,9 +9,9 @@ import (
 const Version = "1.0"
 
 type Wallet struct {
-	Version string
-	Account Account
-	Path    string
+	Version string  `json:"version"`
+	Account Account `json:"account"`
+	path    string
 	rw      io.ReadWriter
 }
 
@@ -32,16 +31,14 @@ func createWallet(rw io.ReadWriter) *Wallet {
 	return &Wallet{
 		Version: Version,
 		Account: Account{},
-		Path:    path,
+		path:    path,
 		rw:      rw,
 	}
 }
 
 func (wlt *Wallet) CreateAccount(passPhrase string) error {
 	account := NewAccountFromPrivateKey(passPhrase)
-	fmt.Printf("Save Before wallet Account: %s\n", wlt.Account)
 	wlt.AddAccount(account)
-	fmt.Printf("Save After wallet Account: %s\n", wlt.Account)
 	return wlt.Save()
 }
 

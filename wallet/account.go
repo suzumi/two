@@ -3,8 +3,8 @@ package wallet
 type (
 	Account struct {
 		privateKey *PrivateKey
-		publicKey  []byte
-		address    string
+		PublicKey  []byte `json:"public_key"`
+		Address    string `json:"address"`
 	}
 )
 
@@ -15,8 +15,8 @@ func NewAccountFromPrivateKey(passPhrase string) *Account {
 
 	return &Account{
 		privateKey: p,
-		publicKey:  pubKey,
-		address:    addr,
+		PublicKey:  pubKey,
+		Address:    addr,
 	}
 
 }
