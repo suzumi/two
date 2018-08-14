@@ -2,9 +2,9 @@ package wallet
 
 import (
 	"os"
-	"io"
-	"encoding/json"
 	"fmt"
+	"encoding/json"
+	"io"
 )
 
 const Version = "1.0"
@@ -39,8 +39,9 @@ func createWallet(rw io.ReadWriter) *Wallet {
 
 func (wlt *Wallet) CreateAccount(passPhrase string) error {
 	account := NewAccountFromPrivateKey(passPhrase)
-	wlt.Add(account)
-	fmt.Printf("Wallet: %s\n", wlt)
+	fmt.Printf("Save Before wallet Account: %s\n", wlt.Account)
+	wlt.AddAccount(account)
+	fmt.Printf("Save After wallet Account: %s\n", wlt.Account)
 	return wlt.Save()
 }
 
@@ -48,6 +49,10 @@ func (wlt *Wallet) Save() error {
 	return json.NewEncoder(wlt.rw).Encode(wlt)
 }
 
-func (wlt *Wallet) Add(account *Account) {
+func (wlt *Wallet) AddAccount(account *Account) {
 	wlt.Account = *account
+}
+
+func (wlt *Wallet) JSON() ([]byte, error) {
+	return json.MarshalIndent(wlt, " ", " ")
 }

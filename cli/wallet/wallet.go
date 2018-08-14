@@ -44,18 +44,22 @@ func createWallet(ctx *cli.Context) error {
 		return cli.NewExitError(err, 1)
 	}
 
+	dumpWallet(wlt)
+
 	if err := createAccount(ctx, wlt); err != nil {
 		return cli.NewExitError(err, 1)
 	}
+
+	dumpWallet(wlt)
 
 	return nil
 }
 
 func createAccount(ctx *cli.Context, wlt *wallet.Wallet) error {
 	buf := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter wallet pass phrase > ")
+	fmt.Print("Enter wallet pass phrase > ")
 	rawPhrase, _ := buf.ReadBytes('\n')
-	fmt.Println("Confirm wallet pass phrase > ")
+	fmt.Print("Confirm wallet pass phrase > ")
 	rawPhraseCheck, _ := buf.ReadBytes('\n')
 
 	phrase := strings.TrimRight(string(rawPhrase), "\n")
@@ -65,5 +69,14 @@ func createAccount(ctx *cli.Context, wlt *wallet.Wallet) error {
 		return errors.New("Entered pass phrase does not match")
 	}
 
+	fmt.Printf("wallet!! : %s\n", wlt)
+
 	return wlt.CreateAccount(phrase)
+}
+
+func dumpWallet(wlt *wallet.Wallet)  {
+	b, _ := wlt.JSON()
+	fmt.Println("")
+	fmt.Println(string(b))
+	fmt.Println("")
 }
