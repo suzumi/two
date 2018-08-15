@@ -1,0 +1,10 @@
+ProtocolConfiguration:
+  SeedList:
+    - 127.0.0.1:13001
+    - 127.0.0.1:13002
+
+ApplicationConfiguration:
+  DataPath: "./data/mainnet"
+  NodePort: 13000
+  DialTimeout: 3 # second
+  MaxPeers: 20
