@@ -39,3 +39,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/btcsuite/btcutil"
+
+[[constraint]]
+  name = "gopkg.in/yaml.v2"
+  version = "2.2.1"

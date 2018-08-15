@@ -3,19 +3,35 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:95f4fdfbc8d7723bd21e467aabe98d86f06d3e2557b1ba92bf9df8aea6706784"
   name = "github.com/btcsuite/btcutil"
   packages = ["base58"]
+  pruneopts = "UT"
   revision = "ab6388e0c60ae4834a1f57511e20c17b5f78be4b"
 
 [[projects]]
+  digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
   name = "github.com/urfave/cli"
   packages = ["."]
+  pruneopts = "UT"
   revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
   version = "v1.20.0"
+
+[[projects]]
+  digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dfdbc8f48e61dd595bd72210632d8772b5f696a44785b07ccc1975d1e86e4e59"
+  input-imports = [
+    "github.com/btcsuite/btcutil/base58",
+    "github.com/urfave/cli",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
