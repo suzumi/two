@@ -16,10 +16,10 @@ type (
 	}
 
 	ApplicationConfiguration struct {
-		DataPath    string
-		NodePort    uint16
-		DialTimeout uint16
-		MaxPeers    uint32
+		DataPath    string `yaml:"DataPath"`
+		NodePort    uint16 `yaml:"NodePort"`
+		DialTimeout uint16 `yaml:"DialTimeout"`
+		MaxPeers    uint32 `yaml:"MaxPeers"`
 	}
 )
 
