@@ -3,6 +3,7 @@ package config
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"time"
 )
 
 type (
@@ -16,10 +17,10 @@ type (
 	}
 
 	ApplicationConfiguration struct {
-		DataPath    string `yaml:"DataPath"`
-		NodePort    uint16 `yaml:"NodePort"`
-		DialTimeout uint16 `yaml:"DialTimeout"`
-		MaxPeers    uint32 `yaml:"MaxPeers"`
+		DataPath    string        `yaml:"DataPath"`
+		NodePort    uint16        `yaml:"NodePort"`
+		DialTimeout time.Duration `yaml:"DialTimeout"`
+		MaxPeers    uint32        `yaml:"MaxPeers"`
 	}
 )
 

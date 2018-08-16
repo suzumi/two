@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli"
 	"fmt"
 	"github.com/suzumi/two/config"
+	"github.com/suzumi/two/network"
 )
 
 func NewCommand() cli.Command {
@@ -28,5 +29,12 @@ func startServer(ctx *cli.Context) error {
 		return cli.NewExitError(err, 1)
 	}
 	fmt.Println(conf)
+
+	node := network.NewNode(conf)
+
+	done := make(chan bool)
+	node.Start()
+	<-done
+
 	return nil
 }
