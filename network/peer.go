@@ -2,22 +2,29 @@ package network
 
 import "net"
 
-type Peer struct {
-	conn net.Conn
-	done chan error
-}
+type (
+	Peer interface {
+		WriteMsg()
+		Disconnect(error)
+	}
 
-func NewPeer(conn net.Conn) *Peer {
-	return &Peer{
+	TCPPeer struct {
+		conn net.Conn
+		done chan error
+	}
+)
+
+func NewPeer(conn net.Conn) *TCPPeer {
+	return &TCPPeer{
 		conn: conn,
 		done: make(chan error),
 	}
 }
 
-func (p *Peer) WriteMsg() {
+func (p *TCPPeer) WriteMsg() {
 	//
 }
 
-func (p *Peer) Disconnect(err error) {
+func (p *TCPPeer) Disconnect(err error) {
 	p.done <- err
 }

@@ -32,5 +32,17 @@ func (c *Connector) Accept() {
 }
 
 func (c *Connector) connectionHandler(conn net.Conn) {
+
+	var (
+		p = NewPeer(conn)
+		err error
+	)
+
+	defer p.Disconnect(err)
+
+	c.node.Peer <- p
+
+	// decode message
+
 	return
 }
