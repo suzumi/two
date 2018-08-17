@@ -14,6 +14,7 @@ func NewCommand() cli.Command {
 		Action: startServer,
 		Flags: []cli.Flag{
 			cli.BoolFlag{Name: "mainnet, m"},
+			cli.IntFlag{Name: "port, p"},
 		},
 	}
 }
@@ -27,6 +28,10 @@ func startServer(ctx *cli.Context) error {
 	conf, err := config.Load(configPath)
 	if err != nil {
 		return cli.NewExitError(err, 1)
+	}
+
+	if p := ctx.Int("port"); p != 0 {
+		conf.ApplicationConfiguration.NodePort = uint16(p)
 	}
 	fmt.Println(conf)
 

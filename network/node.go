@@ -29,15 +29,28 @@ func (n *Node) Start() {
 	fmt.Println("node started...")
 	go n.ConnectToPeers()
 	go n.ListenToTCP()
+	n.run()
 }
 
 func (n *Node) ConnectToPeers() {
 	for _, addr := range n.ProtocolConfiguration.SeedList {
-		n.Connector.Dial(addr, n.ApplicationConfiguration.DialTimeout)
+		if err := n.Connector.Dial(addr, n.ApplicationConfiguration.DialTimeout); err != nil {
+			fmt.Sprintf("failed to connect: %s\n", err)
+		}
 	}
 	fmt.Println("connecting to peers...")
 }
 
 func (n *Node) ListenToTCP() {
 	fmt.Println("listen to TCP from peers...")
+	n.Connector.Accept()
+}
+
+func (n *Node) run() {
+	for {
+		select {
+		case p := <-n.Peer:
+			fmt.Println("new peer connected", p)
+		}
+	}
 }
