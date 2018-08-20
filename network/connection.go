@@ -11,7 +11,7 @@ type Connector struct {
 	listener net.Listener
 }
 
-const TCP  = "tcp"
+const TCP = "tcp"
 
 func NewConnector(n *Node) *Connector {
 	return &Connector{
@@ -52,7 +52,7 @@ func (c *Connector) Accept() {
 func (c *Connector) connectionHandler(conn net.Conn) {
 
 	var (
-		p = NewPeer(conn)
+		p   = NewPeer(conn)
 		err error
 	)
 
@@ -64,5 +64,4 @@ func (c *Connector) connectionHandler(conn net.Conn) {
 
 	// decode message
 
-	return
 }

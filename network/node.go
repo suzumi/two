@@ -51,6 +51,12 @@ func (n *Node) run() {
 		select {
 		case p := <-n.Peer:
 			fmt.Println("new peer connected", p)
+			// send version
+			n.sendVersion(p)
 		}
 	}
+}
+
+func (n *Node) sendVersion(p Peer) {
+	//
 }
