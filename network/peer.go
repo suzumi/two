@@ -4,7 +4,7 @@ import "net"
 
 type (
 	Peer interface {
-		WriteMsg()
+		WriteMsg(*Message) error
 		Disconnect(error)
 	}
 
@@ -21,8 +21,8 @@ func NewPeer(conn net.Conn) *TCPPeer {
 	}
 }
 
-func (p *TCPPeer) WriteMsg() {
-	//
+func (p *TCPPeer) WriteMsg(msg *Message) error {
+	return msg.Encode(p.conn)
 }
 
 func (p *TCPPeer) Disconnect(err error) {

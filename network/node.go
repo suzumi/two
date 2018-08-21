@@ -57,6 +57,8 @@ func (n *Node) run() {
 	}
 }
 
-func (n *Node) sendVersion(p Peer) {
-	//
+func (n *Node) sendVersion(p Peer) error{
+	// TODO: fix
+	payload := NewPayload(0, n.ID)
+	return p.WriteMsg(NewMessage(CMDVersion, payload))
 }
