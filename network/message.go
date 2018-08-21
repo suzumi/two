@@ -37,7 +37,7 @@ func (m *Message) Encode(w io.Writer) error {
 		return err
 	}
 	if m.Payload != nil {
-		return m.Encode(w)
+		return m.Payload.EncodeBinary(w)
 	}
 	return nil
 }
@@ -73,7 +73,7 @@ func NewPayload(height uint32, id uint32) *Payload {
 	}
 }
 
-func (p *Payload) Encode(w io.Writer) error {
+func (p *Payload) EncodeBinary(w io.Writer) error {
 	if err := binary.Write(w, binary.LittleEndian, p.Version); err != nil {
 		return err
 	}
