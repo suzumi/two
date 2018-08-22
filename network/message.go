@@ -1,9 +1,11 @@
 package network
 
 import (
-	"time"
 	"io"
 	"encoding/binary"
+	"github.com/suzumi/two/network/payload"
+	"bytes"
+	"fmt"
 )
 
 const (
@@ -11,18 +13,24 @@ const (
 
 	CMDVersion CommandType = "version"
 	CMDverack  CommandType = "verack"
+	CMDUnknown CommandType = "unknown"
 )
 
 type (
 	CommandType string
 	Message struct {
+		// command is 12 byte
 		Command [cmdByte]byte
-		Length  uint32
-		Payload *Payload
+
+		// length of payload
+		Length uint32
+
+		// payload is message
+		Payload *payload.Version
 	}
 )
 
-func NewMessage(cmdType CommandType, payload *Payload) *Message {
+func NewMessage(cmdType CommandType, payload *payload.Version) *Message {
 	return &Message{
 		Command: cmdToByteArray(cmdType),
 		Payload: payload,
@@ -42,6 +50,73 @@ func (m *Message) Encode(w io.Writer) error {
 	return nil
 }
 
+func (m *Message) Decode(r io.Reader) error {
+	fmt.Println("################ decode")
+	if err := binary.Read(r, binary.LittleEndian, m.Command); err != nil {
+		fmt.Println("+++ decode error: Command")
+		return err
+	}
+	if err := binary.Read(r, binary.LittleEndian, m.Length); err != nil {
+		fmt.Println("+++ decode error: Length")
+		return err
+	}
+	if m.Length == 0 {
+		return nil
+	}
+
+	if err := m.decodePayload(r); err != nil {
+		return err
+	}
+	fmt.Printf("#### Message: %s", *m)
+	return nil
+	//return m.decodePayload(r)
+}
+
+func (m *Message) decodePayload(r io.Reader) error {
+	buf := new(bytes.Buffer)
+	n, err := io.Copy(buf, r)
+	if err != nil {
+		return err
+	}
+
+	if uint32(n) != m.Length {
+		fmt.Errorf("expected to doesn't match length, expected: %d, actual: %d", m.Length, n)
+	}
+
+	var p payload.Payload
+	switch m.CommandType() {
+	case CMDVersion:
+		p = &payload.Version{}
+		if err := p.DecodeBinary(r); err != nil {
+			return err
+		}
+		return nil
+	case CMDverack:
+		return nil
+	}
+	return nil
+}
+
+func (m *Message) CommandType() CommandType {
+	cmd := cmdByteArrayToString(m.Command)
+	switch cmd {
+	case "version":
+		return CMDVersion
+	case "verack":
+		return CMDverack
+	default:
+		return CMDUnknown
+	}
+}
+
+func cmdByteArrayToString(byteArr [cmdByte]byte) string {
+	buf := []byte{}
+	for i := 0; i < cmdByte; i++ {
+		buf = append(buf, byteArr[i])
+	}
+	return string(buf)
+}
+
 func cmdToByteArray(cmd CommandType) [cmdByte]byte {
 	cmdLen := len(cmd)
 	if cmdLen > cmdByte {
@@ -53,42 +128,4 @@ func cmdToByteArray(cmd CommandType) [cmdByte]byte {
 		b[i] = cmd[i]
 	}
 	return b
-}
-
-type (
-	Payload struct {
-		Version     uint32
-		Timestamp   uint32
-		BlockHeight uint32
-		NodeID      uint32
-	}
-)
-
-func NewPayload(height uint32, id uint32) *Payload {
-	return &Payload{
-		Version:     0,
-		Timestamp:   uint32(time.Now().UTC().Unix()),
-		BlockHeight: height,
-		NodeID:      id,
-	}
-}
-
-func (p *Payload) EncodeBinary(w io.Writer) error {
-	if err := binary.Write(w, binary.LittleEndian, p.Version); err != nil {
-		return err
-	}
-
-	if err := binary.Write(w, binary.LittleEndian, p.Timestamp); err != nil {
-		return err
-	}
-
-	if err := binary.Write(w, binary.LittleEndian, p.BlockHeight); err != nil {
-		return err
-	}
-
-	if err := binary.Write(w, binary.LittleEndian, p.NodeID); err != nil {
-		return err
-	}
-
-	return nil
 }

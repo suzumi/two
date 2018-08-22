@@ -4,6 +4,7 @@ import (
 	"github.com/suzumi/two/util"
 	"github.com/suzumi/two/config"
 	"fmt"
+	"github.com/suzumi/two/network/payload"
 )
 
 type (
@@ -57,8 +58,8 @@ func (n *Node) run() {
 	}
 }
 
-func (n *Node) sendVersion(p Peer) error{
+func (n *Node) sendVersion(p Peer) error {
 	// TODO: fix
-	payload := NewPayload(0, n.ID)
+	payload := payload.NewVersion(0, n.ID)
 	return p.WriteMsg(NewMessage(CMDVersion, payload))
 }

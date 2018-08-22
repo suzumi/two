@@ -20,7 +20,7 @@ func NewConnector(n *Node) *Connector {
 }
 
 func (c *Connector) Dial(addr string, timeout time.Duration) error {
-	conn, err := net.DialTimeout(TCP, addr, timeout * time.Second)
+	conn, err := net.DialTimeout(TCP, addr, timeout*time.Second)
 	if err != nil {
 		fmt.Println("call Dial error ...")
 		return err
@@ -63,6 +63,11 @@ func (c *Connector) connectionHandler(conn net.Conn) {
 
 	c.node.Peer <- p
 
-	// decode message
+	for {
+		msg := &Message{}
+		if err := msg.Decode(p.conn); err != nil {
+			return
+		}
+	}
 
 }
