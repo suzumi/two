@@ -20,12 +20,13 @@ func NewConnector(n *Node) *Connector {
 }
 
 func (c *Connector) Dial(addr string, timeout time.Duration) error {
-	conn, err := net.DialTimeout(TCP, addr, timeout)
+	conn, err := net.DialTimeout(TCP, addr, timeout * time.Second)
 	if err != nil {
+		fmt.Println("call Dial error ...")
 		return err
 	}
-	fmt.Println(conn)
-	c.connectionHandler(conn)
+	fmt.Printf("remote addr: %s\n", conn.RemoteAddr())
+	go c.connectionHandler(conn)
 	return nil
 }
 

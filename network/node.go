@@ -34,11 +34,11 @@ func (n *Node) Start() {
 
 func (n *Node) ConnectToPeers() {
 	for _, addr := range n.ProtocolConfiguration.SeedList {
+		fmt.Printf("connecting to peers to ...: %s\n", addr)
 		if err := n.Connector.Dial(addr, n.ApplicationConfiguration.DialTimeout); err != nil {
 			fmt.Sprintf("failed to connect: %s\n", err)
 		}
 	}
-	fmt.Println("connecting to peers...")
 }
 
 func (n *Node) ListenToTCP() {
