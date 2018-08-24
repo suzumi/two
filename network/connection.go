@@ -25,7 +25,6 @@ func (c *Connector) Dial(addr string, timeout time.Duration) error {
 		fmt.Println("call Dial error ...")
 		return err
 	}
-	fmt.Printf("remote addr: %s\n", conn.RemoteAddr())
 	go c.connectionHandler(conn)
 	return nil
 }
@@ -43,7 +42,6 @@ func (c *Connector) Accept() {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("")
 			return
 		}
 		go c.connectionHandler(conn)
@@ -57,17 +55,19 @@ func (c *Connector) connectionHandler(conn net.Conn) {
 		err error
 	)
 
-	fmt.Println("connection handler")
+	fmt.Printf("connection handler, remote node: %s\n", conn.RemoteAddr())
 
 	defer p.Disconnect(err)
 
-	c.node.Peer <- p
+	c.node.Register <- p
 
 	for {
 		msg := &Message{}
 		if err := msg.Decode(p.conn); err != nil {
+			fmt.Printf("Decode Error: %e\n", err)
 			return
 		}
+		fmt.Printf("Message: %s\n", msg.Command)
 	}
 
 }

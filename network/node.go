@@ -11,16 +11,16 @@ type (
 	Node struct {
 		config.Config
 		ID        uint32
-		Peer      chan Peer
+		Register  chan Peer
 		Connector *Connector
 	}
 )
 
 func NewNode(config *config.Config) *Node {
 	node := &Node{
-		Config: *config,
-		ID:     util.RandUint32(1000000, 9999999),
-		Peer:   make(chan Peer),
+		Config:   *config,
+		ID:       util.RandUint32(1000000, 9999999),
+		Register: make(chan Peer),
 	}
 	node.Connector = NewConnector(node)
 	return node
@@ -50,7 +50,7 @@ func (n *Node) ListenToTCP() {
 func (n *Node) run() {
 	for {
 		select {
-		case p := <-n.Peer:
+		case p := <-n.Register:
 			fmt.Println("new peer connected", p)
 			// send version
 			n.sendVersion(p)
@@ -60,6 +60,8 @@ func (n *Node) run() {
 
 func (n *Node) sendVersion(p Peer) error {
 	// TODO: fix
-	payload := payload.NewVersion(0, n.ID)
-	return p.WriteMsg(NewMessage(CMDVersion, payload))
+	pl := payload.NewVersion(0, n.ID)
+	newMsg := NewMessage(CMDVersion, pl)
+	fmt.Println("new message: ", *newMsg)
+	return p.WriteMsg(newMsg)
 }

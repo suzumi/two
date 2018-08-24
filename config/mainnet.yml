@@ -1,7 +1,7 @@
 ProtocolConfiguration:
   SeedList:
     - 127.0.0.1:13001
-    - 127.0.0.1:13002
+#    - 127.0.0.1:13002
 
 ApplicationConfiguration:
   DataPath: "./data/mainnet"

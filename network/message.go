@@ -26,14 +26,24 @@ type (
 		Length uint32
 
 		// payload is message
-		Payload *payload.Version
+		Payload payload.Payload
 	}
 )
 
-func NewMessage(cmdType CommandType, payload *payload.Version) *Message {
+func NewMessage(cmdType CommandType, p payload.Payload) *Message {
+	var size uint32
+	if p != nil {
+		buf := new(bytes.Buffer)
+		if err := p.EncodeBinary(buf); err != nil {
+			panic(err)
+		}
+		size = uint32(buf.Len())
+	}
+
 	return &Message{
 		Command: cmdToByteArray(cmdType),
-		Payload: payload,
+		Length:  size,
+		Payload: p,
 	}
 }
 
@@ -51,23 +61,24 @@ func (m *Message) Encode(w io.Writer) error {
 }
 
 func (m *Message) Decode(r io.Reader) error {
-	fmt.Println("################ decode")
-	if err := binary.Read(r, binary.LittleEndian, m.Command); err != nil {
-		fmt.Println("+++ decode error: Command")
+	if err := binary.Read(r, binary.LittleEndian, &m.Command); err != nil {
+		fmt.Println("#### Decode error: Command -> ", err)
 		return err
 	}
-	if err := binary.Read(r, binary.LittleEndian, m.Length); err != nil {
-		fmt.Println("+++ decode error: Length")
+	if err := binary.Read(r, binary.LittleEndian, &m.Length); err != nil {
+		fmt.Println("#### Decode error: Lenght -> ", err)
 		return err
 	}
 	if m.Length == 0 {
+		fmt.Println("Message has no payload")
 		return nil
 	}
 
 	if err := m.decodePayload(r); err != nil {
+		fmt.Println("#### Decode error: Payload -> ", err)
 		return err
 	}
-	fmt.Printf("#### Message: %s", *m)
+
 	return nil
 	//return m.decodePayload(r)
 }
@@ -76,11 +87,12 @@ func (m *Message) decodePayload(r io.Reader) error {
 	buf := new(bytes.Buffer)
 	n, err := io.Copy(buf, r)
 	if err != nil {
+		fmt.Println("#### Decode error: Payload copy to buffer -> ", err)
 		return err
 	}
 
 	if uint32(n) != m.Length {
-		fmt.Errorf("expected to doesn't match length, expected: %d, actual: %d", m.Length, n)
+		return fmt.Errorf("expected to doesn't match length, expected: %d, actual: %d", m.Length, n)
 	}
 
 	var p payload.Payload
