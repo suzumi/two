@@ -1,6 +1,9 @@
 package network
 
-import "net"
+import (
+	"net"
+	"fmt"
+)
 
 type (
 	Peer interface {
@@ -22,6 +25,7 @@ func NewPeer(conn net.Conn) *TCPPeer {
 }
 
 func (p *TCPPeer) WriteMsg(msg *Message) error {
+	fmt.Println("send version messages....")
 	return msg.Encode(p.conn)
 }
 

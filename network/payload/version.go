@@ -4,6 +4,7 @@ import (
 	"time"
 	"encoding/binary"
 	"io"
+	"fmt"
 )
 
 type (
@@ -25,6 +26,7 @@ func NewVersion(height uint32, id uint32) *Version {
 }
 
 func (p *Version) EncodeBinary(w io.Writer) error {
+	fmt.Println("encoding payload... ", "blockHeight: ", p.BlockHeight, " nodeID: ", p.NodeID, " version: ", p.Version, " timestamp: ", p.Timestamp)
 	if err := binary.Write(w, binary.LittleEndian, p.Version); err != nil {
 		return err
 	}

@@ -60,7 +60,7 @@ func (n *Node) run() {
 
 func (n *Node) sendVersion(p Peer) error {
 	// TODO: fix
-	pl := payload.NewVersion(0, n.ID)
+	pl := payload.NewVersion(50, n.ID)
 	newMsg := NewMessage(CMDVersion, pl)
 	fmt.Println("new message: ", *newMsg)
 	return p.WriteMsg(newMsg)

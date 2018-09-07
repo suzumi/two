@@ -30,7 +30,6 @@ func (c *Connector) Dial(addr string, timeout time.Duration) error {
 }
 
 func (c *Connector) Accept() {
-	fmt.Printf("listen to port: %d\n", c.node.ApplicationConfiguration.NodePort)
 	l, err := net.Listen(TCP, fmt.Sprintf(":%d", c.node.ApplicationConfiguration.NodePort))
 	if err != nil {
 		fmt.Printf("listen TCP error: %s\n", err)
@@ -55,7 +54,7 @@ func (c *Connector) connectionHandler(conn net.Conn) {
 		err error
 	)
 
-	fmt.Printf("connection handler, remote node: %s\n", conn.RemoteAddr())
+	fmt.Printf("★Connection handler, remote node: %s\n", conn.RemoteAddr())
 
 	defer p.Disconnect(err)
 
@@ -67,7 +66,7 @@ func (c *Connector) connectionHandler(conn net.Conn) {
 			fmt.Printf("Decode Error: %e\n", err)
 			return
 		}
-		fmt.Printf("Message: %s\n", msg.Command)
+		fmt.Printf("**Message: %s\n", msg.Command)
 	}
 
 }

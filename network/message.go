@@ -37,6 +37,7 @@ func NewMessage(cmdType CommandType, p payload.Payload) *Message {
 		if err := p.EncodeBinary(buf); err != nil {
 			panic(err)
 		}
+		// TODO: このbufにencodeしたpayloadがある
 		size = uint32(buf.Len())
 	}
 
@@ -61,6 +62,7 @@ func (m *Message) Encode(w io.Writer) error {
 }
 
 func (m *Message) Decode(r io.Reader) error {
+	fmt.Println("**** decode")
 	if err := binary.Read(r, binary.LittleEndian, &m.Command); err != nil {
 		fmt.Println("#### Decode error: Command -> ", err)
 		return err
@@ -84,8 +86,9 @@ func (m *Message) Decode(r io.Reader) error {
 }
 
 func (m *Message) decodePayload(r io.Reader) error {
+	fmt.Println("decode !!!!!!!!!!!")
 	buf := new(bytes.Buffer)
-	n, err := io.Copy(buf, r)
+	n, err := io.CopyN(buf, r, int64(m.Length))
 	if err != nil {
 		fmt.Println("#### Decode error: Payload copy to buffer -> ", err)
 		return err
@@ -96,7 +99,9 @@ func (m *Message) decodePayload(r io.Reader) error {
 	}
 
 	var p payload.Payload
-	switch m.CommandType() {
+	cmdType := m.CommandType()
+	fmt.Println("受信したMessageのcmdType:", cmdType)
+	switch cmdType {
 	case CMDVersion:
 		p = &payload.Version{}
 		if err := p.DecodeBinary(r); err != nil {
@@ -111,12 +116,15 @@ func (m *Message) decodePayload(r io.Reader) error {
 
 func (m *Message) CommandType() CommandType {
 	cmd := cmdByteArrayToString(m.Command)
+	fmt.Println("command: ", cmd) // "version"
 	switch cmd {
 	case "version":
+		fmt.Println("バージョンはコマンドだよ, バージョン-> ", cmd)
 		return CMDVersion
 	case "verack":
 		return CMDverack
 	default:
+		fmt.Println("バージョンはわからないだよ, バージョン-> ", cmd)
 		return CMDUnknown
 	}
 }
@@ -124,7 +132,9 @@ func (m *Message) CommandType() CommandType {
 func cmdByteArrayToString(byteArr [cmdByte]byte) string {
 	buf := []byte{}
 	for i := 0; i < cmdByte; i++ {
-		buf = append(buf, byteArr[i])
+		if byteArr[i] != 0 {
+			buf = append(buf, byteArr[i])
+		}
 	}
 	return string(buf)
 }
